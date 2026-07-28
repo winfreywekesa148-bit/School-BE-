@@ -39,6 +39,7 @@ def create_assignment():
     db.session.comit()
     return jsonify ({"message": "Assignment created successfully."})
 
+
 @app.route("/assignments", methods=["GET"])
 @jwt_required()
 def get_assignments():
@@ -52,7 +53,20 @@ def get_assignments():
             "title": assignment.title,
             "course_name": assignment.course_name,
             "course_id": assignment.course_id,
-            "dueDate": assignment.studentlast_name
-
+            "dueDate": assignment.studentlast_name      
         })
     return jsonify(assignment_list),200
+
+@app.route("/assignments/<int:assignment_id>", methods=["DELETE"])
+@jwt_required()
+@teacher_or_admin_required
+
+def delete_assignment(assignment_id):
+    assignment = Assignment.query.get(assignment_id)
+
+    if assignment is None:
+        return jsonify({"message": "Assignment not found"}), 404
+
+    db.session.delete(assignment)
+    db.session.commit()
+    return jsonify({"message": "Assignment deleted"}),200      
