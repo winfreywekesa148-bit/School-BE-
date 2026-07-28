@@ -1,6 +1,10 @@
-from models import Assignment
-from flask import jsonify, Flask
+from models import Assignment, Course
+from flask import request, jsonify, Flask
 from flask_jwt_extended import jwt_required
+from utils.decorators import teacher_or_admin_required
+from datetime import datetime
+from extensions import db
+
 
 app = Flask(__name__)
 
