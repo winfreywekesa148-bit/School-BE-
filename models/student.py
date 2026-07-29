@@ -1,16 +1,13 @@
 from extensions import db
 
 class Student(db.Model):
-
-    __tablename__ = "student"
-
+    __tablename__ = 'student'
+    
     student_id = db.Column(db.Integer, primary_key=True)
-    studentfirst_name = db.Column(db.String)
-    studentlast_name = db.Column(db.String)
-    course_name = db.Cloumn(db.String)
-    course_id = db.Column(db.Integer,
-                          db.ForeignKey("course.id"))
-
-    #one to many: a student can have many gardes
-    grades = db.relationship("Grade", back_populates="student", lazy="dynamic")
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    grade = db.Column(db.String(10))
+    email = db.Column(db.String(120), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.course_id'))
+    course_name = db.Column(db.String(100))

@@ -1,13 +1,12 @@
 from extensions import db
 
 class Assignment(db.Model):
-    Assignment_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String)
-    course_name = db.Column(db.Text)
-    course_id = db.Column(db.Integer,
-                          db.ForeignKey("course.id"))
-    dueDate = db.Column(db.Time)
-
-    #one to many: assignment belongs to one course
-    course = db.relationship("Course", back_populates="assignments")
-
+    __tablename__ = 'assignment'
+    
+    assignment_id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.course_id'))
+    title = db.Column(db.String(100), nullable=False)
+    due_date = db.Column(db.DateTime)
+    
+    course = db.relationship('Course', back_populates='assignments')
+    submissions = db.relationship('Submission', back_populates='assignment')
