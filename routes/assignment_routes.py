@@ -5,9 +5,7 @@ from utils.decorators import teacher_or_admin_required
 from datetime import datetime
 from extensions import db
 
-
 app = Flask(__name__)
-
 
 @app.route("/assignments", methods=["POST"])
 @jwt_required()
@@ -57,9 +55,11 @@ def get_assignments():
             "title": assignment.title,
             "course_name": assignment.course_name,
             "course_id": assignment.course_id,
-            "dueDate": assignment.studentlast_name      
+            "dueDate": assignment.studentlast_name
+
         })
     return jsonify(assignment_list),200
+
 
 @app.route("/assignments/<int:assignment_id>", methods=["DELETE"])
 @jwt_required()
@@ -73,4 +73,4 @@ def delete_assignment(assignment_id):
 
     db.session.delete(assignment)
     db.session.commit()
-    return jsonify({"message": "Assignment deleted"}),200      
+    return jsonify({"message": "Assignment deleted"}),200
