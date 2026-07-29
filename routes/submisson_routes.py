@@ -5,10 +5,10 @@ from extensions import db
 
 app = Flask(__name__)
 
-@app.route("/grades/<int:id>", methods=["PUT"])
+@app.route("/grades/<int:submission_id>", methods=["PUT"])
 @jwt_required()
 
-def grade_submission(id):
+def grade_submission(submission_id):
     submission = Submission.query.get(id)
 
     if submission is None:
