@@ -1,30 +1,35 @@
-from flask import request, jsonify, Flask
+from flask import Blueprint, request, jsonify
 from models import User
 from extensions import db
 
-app = Flask(__name__)
+register_bp = Blueprint('register', __name__)
 
-@app.route("/register", methods=["POST"])
-
+@register_bp.route('/register', methods=['POST'])
 def register():
-
     data = request.get_json()
-
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"message":"Email already exists"}), 400
-
+    username = data.get('username')
+    password = data.get('password')
+    email = data.get('email')
+    name = data.get('name')
+    full_name = data.get('full_name')
+    role = data.get('role', 'student')
+    
+    if not username or not password or not email:
+        return jsonify({'message': 'Username, password, and email are required'}), 400
+    
+    if User.query.filter_by(username=username).first():
+        return jsonify({'message': 'Username already exists'}), 409
+    if User.query.filter_by(email=email).first():
+        return jsonify({'message': 'Email already exists'}), 409
+    
     user = User(
-        name=data["name"],
-        email=data["email"],
-        role=data["role"]
+        username=username,
+        name=name or username,
+        full_name=full_name or name,
+        email=email,
+        role=role
     )
-
-    user.set_password(data["password"])
-
+    user.set_password(password)
     db.session.add(user)
     db.session.commit()
-
-    return jsonify({
-        "message": "Registration was Successful"
-    }),201
-
+    return jsonify({'message': 'User registered successfully'}), 201

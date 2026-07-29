@@ -1,31 +1,27 @@
-from flask import request, jsonify, Flask
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
 from models import User
+from extensions import db
 
-app = Flask(__name__)
+login_bp = Blueprint('login', __name__)
 
-@app.route("/login", methods=["POST"])
-
+@login_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-
-    email = data["email"]
-
-    password = data["password"]
-
-    user = User.query.filter_by(email=email).first()
-
-    if user and user.check_password(password):
-
-        token = create_access_token(identity=str(user.id))
-
-        return jsonify({
-            "access_token": token,
-            "role": user.role,
-            "name": user.name
-
-        }),200
-
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'message': 'Username and password are required'}), 400
+    
+    user = User.query.filter_by(username=username).first()
+    if not user or not user.check_password(password):
+        return jsonify({'message': 'Invalid username or password'}), 401
+    
+    access_token = create_access_token(identity=user.user_id)
     return jsonify({
-        "message": "Wrong email address or password. Check again"
-    }), 401
+        'access_token': access_token,
+        'user_id': user.user_id,
+        'username': user.username,
+        'role': user.role
+    }), 200

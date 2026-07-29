@@ -1,24 +1,33 @@
-from flask import jsonify, Flask
-from models import Course
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from models import Course
+from extensions import db
 
-app = Flask(__name__)
+course_bp = Blueprint('course', __name__)
 
-@app.route("/courses", methods=["GET"])
+@course_bp.route('/courses', methods=['GET', 'POST'])
 @jwt_required()
-def get_courses():
-    courses = Course.query.all()
-
-    course_list = []
-
-    for course in courses:
-        course_list.append({
-            "course_name": course.course_name,
-            "course_id": course.course_id,
-            "duration": course.duration,
-            "mentorfirst_name": course.mentorfirst_name,
-            "mentorlast_name": course.mentorlast_name,
-            "department": course.department
-            
-        })
-    return jsonify(course_list),200
+def manage_courses():
+    if request.method == 'GET':
+        courses = Course.query.all()
+        result = []
+        for course in courses:
+            result.append({
+                'course_id': course.course_id,
+                'title': course.title,
+                'description': course.description,
+                'credits': course.credits,
+                'teacher_id': course.teacher_id
+            })
+        return jsonify(result), 200
+    
+    data = request.get_json()
+    new_course = Course(
+        title=data.get('title'),
+        description=data.get('description'),
+        credits=data.get('credits', 0),
+        teacher_id=data.get('teacher_id')
+    )
+    db.session.add(new_course)
+    db.session.commit()
+    return jsonify({'message': 'Course created', 'course_id': new_course.course_id}), 201

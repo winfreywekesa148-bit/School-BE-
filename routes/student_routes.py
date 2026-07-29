@@ -1,23 +1,39 @@
-from models import Student
-from flask import jsonify, Flask
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from models import Student
+from extensions import db
 
-app = Flask(__name__)
+student_bp = Blueprint('student', __name__)
 
-@app.route("/students", methods=["GET"])
+@student_bp.route('/students', methods=['GET', 'POST'])
 @jwt_required()
-def get_students():
-    students = Student.query.all()
-
-    student_list = []
-
-    for student in students:
-        student_list.append({
-            "student_id": student.id,
-            "studentfirst_name": student.studentfirst_name,
-            "studentlast_name": student.studentlast_name,
-            "course_name": student.course_name,
-            "course_id": student.course_id
-
-        })
-    return jsonify(student_list),200
+def manage_students():
+    if request.method == 'GET':
+        students = Student.query.all()
+        result = []
+        for student in students:
+            result.append({
+                'student_id': student.student_id,
+                'user_id': student.user_id,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'grade': student.grade,
+                'email': student.email,
+                'course_id': student.course_id,
+                'course_name': student.course_name
+            })
+        return jsonify(result), 200
+    
+    data = request.get_json()
+    new_student = Student(
+        user_id=data.get('user_id'),
+        first_name=data.get('first_name'),
+        last_name=data.get('last_name'),
+        grade=data.get('grade'),
+        email=data.get('email'),
+        course_id=data.get('course_id'),
+        course_name=data.get('course_name')
+    )
+    db.session.add(new_student)
+    db.session.commit()
+    return jsonify({'message': 'Student created', 'student_id': new_student.student_id}), 201
