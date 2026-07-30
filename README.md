@@ -481,7 +481,7 @@ Frontend
 
 Deploy using
 
-- Vercel
+- Render
 
 Backend
 
