@@ -54,6 +54,8 @@ def manage_submissions():
 @teacher_or_admin_required
 def grade_submission(submission_id):
     data = request.get_json()
+    print(data)
+    
     submission = Submission.query.get(submission_id)
     if not submission:
         return jsonify({'message': 'Submission not found'}), 404

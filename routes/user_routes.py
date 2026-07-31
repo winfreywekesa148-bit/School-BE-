@@ -14,6 +14,7 @@ user_bp = Blueprint("user_bp", __name__)
 def register():
 
     data = request.get_json()
+    print(data)
 
     # Check if email already exists
     existing_user = User.query.filter_by(email=data["email"]).first()
