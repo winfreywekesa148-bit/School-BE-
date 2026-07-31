@@ -1,4 +1,4 @@
-from extensions import ma
+from venv.extensions import ma
 from models import User, Mentor, Student, Course, Assignment, Submission, LessonPlan
 
 class UserSchema(ma.SQLAlchemyAutoSchema):

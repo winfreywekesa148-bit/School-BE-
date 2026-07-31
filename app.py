@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import request, jsonify, Flask
 from flask_cors import CORS
 
 from config import Config
@@ -8,9 +8,9 @@ from extensions import db, jwt, ma, migrate
 from routes.user_routes import user_bp
 from routes.course_routes import course_bp
 from routes.assignment_routes import assignment_bp
-from routes.lessonplan_routes import lessonplan_bp
 from routes.student_routes import student_bp
 from routes.mentor_routes import mentor_bp
+from routes.lessonplan_route import lessonplan_bp
 
 
 def create_app():
@@ -22,7 +22,7 @@ def create_app():
     app.config.from_object(Config)
 
     # Allow React to communicate with Flask
-    CORS(app)
+    CORS(app, origins=["http://localhost:5173"])
 
     # Initialize extensions
     db.init_app(app)
@@ -36,13 +36,13 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(course_bp)
     app.register_blueprint(assignment_bp)
-    app.register_blueprint(lessonplan_bp)
     app.register_blueprint(student_bp)
     app.register_blueprint(mentor_bp)
-
+    app.register_blueprint(lessonplan_bp)
     # -----------------------------
     # Test Route
     # -----------------------------
+    
     @app.route("/")
     def home():
         return {
@@ -51,3 +51,4 @@ def create_app():
 
     return app
 
+    
